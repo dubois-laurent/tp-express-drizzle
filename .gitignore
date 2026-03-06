@@ -1,0 +1,10 @@
+node_modules/
+dist/
+Corrections/
+.dockerignore
+.DS_Store
+.vscode/
+QCM
+
+
+Exercices/

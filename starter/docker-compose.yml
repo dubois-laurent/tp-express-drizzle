@@ -1,0 +1,34 @@
+services:
+  app:
+    build: .
+    container_name: node-ts-movie
+    # Commande ajoutée pour éviter que le volume .:/app écrase le dossier /app du container avec node-module dedans
+    command: sh -c "pnpm install && pnpm dev"
+    volumes:
+      - .:/app
+    ports:
+      - "3001:3000"
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: db
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: db-postgres-movie
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      # La base est créée automatiquement au démarrage avec ce nom.
+      POSTGRES_DB: db
+    ports:
+      - "5434:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
