@@ -10,8 +10,8 @@ import { router } from "./router";
 
 const PORT = Number(process.env.PORT ?? 3000);
 
-const movies = new MovieRepository(pool);
-const screenings = new ScreeningRepository(pool);
+const movies = new MovieRepository();
+const screenings = new ScreeningRepository();
 const deps = { pool, movies, screenings };
 
 const server = createServer(
@@ -21,5 +21,5 @@ const server = createServer(
 );
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`http://localhost:3000`);
+  console.log(`http://localhost:${PORT}`);
 });

@@ -1,10 +1,10 @@
 export type Screening = {
-  id: number;
-  movieId: number;
+  id: string;
+  movieId: string;
   startTime: string;
   price: number;
   room: {
-    id: number;
+    id: string;
     name: string;
     capacity: number;
   };

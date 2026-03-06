@@ -2,8 +2,10 @@
 -- CINÉCONNECT - SCHEMA
 -- =========================
 
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 CREATE TABLE movies (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
   description TEXT,
   duration_minutes INTEGER NOT NULL,
@@ -12,15 +14,15 @@ CREATE TABLE movies (
 );
 
 CREATE TABLE rooms (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   capacity INTEGER NOT NULL
 );
 
 CREATE TABLE screenings (
-  id SERIAL PRIMARY KEY,
-  movie_id INTEGER NOT NULL REFERENCES movies(id) ON DELETE CASCADE,
-  room_id INTEGER NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  movie_id UUID NOT NULL REFERENCES movies(id) ON DELETE CASCADE,
+  room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
   start_time TIMESTAMP NOT NULL,
   price NUMERIC(6,2) NOT NULL
 );
@@ -39,10 +41,3 @@ INSERT INTO rooms (name, capacity)
 VALUES
   ('Room A', 120),
   ('Room B', 80);
-
-INSERT INTO screenings (movie_id, room_id, start_time, price)
-VALUES
-  (1, 1, '2025-06-01 18:00:00', 12.50),
-  (1, 2, '2025-06-01 21:00:00', 12.50),
-  (2, 1, '2025-06-02 19:00:00', 13.00),
-  (3, 2, '2025-06-03 20:30:00', 11.00);

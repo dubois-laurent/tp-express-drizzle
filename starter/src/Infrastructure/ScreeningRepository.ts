@@ -1,24 +1,24 @@
-import { Pool } from "pg";
-import { Screening } from "../Domain/Screening";
+import { roomSchema, screeningSchema } from "./schema";
+import { db } from "./drizzle";
+import { asc, eq } from "drizzle-orm";
 
 export class ScreeningRepository {
-  constructor(private readonly pool: Pool) {}
-  async listByMovieId(movieId: number): Promise<Screening[]> {
-    const result = await this.pool.query<Screening>(
-      `select
-            s.id,
-            s.movie_id as "movieId",
-            s.start_time::text as "startTime",
-            s.price::float8 as "price",
-            r.id as "roomId",
-            r.name as "roomName",
-            r.capacity as "roomCapacity"
-        from screenings s
-        join rooms r on r.id = s.room_id
-        where s.movie_id = $1
-        order by s.start_time asc;`,
-      [movieId],
-    );
-    return result.rows;
+  async listScreeningsByMovieId(movieId: string) {
+    const rows = await db
+      .select({
+        id: screeningSchema.id,
+        movieId: screeningSchema.movieId,
+        startTime: screeningSchema.startTime,
+        price: screeningSchema.price,
+        roomId: roomSchema.id,
+        roomName: roomSchema.name,
+        roomCapacity: roomSchema.capacity,
+      })
+      .from(screeningSchema)
+      .innerJoin(roomSchema, eq(roomSchema.id, screeningSchema.roomId))
+      .where(eq(screeningSchema.movieId, movieId))
+      .orderBy(asc(screeningSchema.startTime));
+
+    return rows;
   }
 }

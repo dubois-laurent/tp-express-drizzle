@@ -1,20 +1,35 @@
-import { Pool } from "pg";
+import { eq } from "drizzle-orm";
 import { Movie } from "../Domain/Movie";
-
+import { db } from "./drizzle";
+import { movieSchema } from "./schema";
 export class MovieRepository {
-  constructor(private pool: Pool) {}
-
   async getAllMovies(): Promise<Movie[]> {
-    const result = await this.pool.query(`
-        select
-        id,
-        title,
-        description,
-        duration_minutes as "durationMinutes",
-        rating,
-        release_date::text as "releaseDate" -- syntaxe Postgres
-        from movies
-        order by id asc;`);
-    return result.rows;
+    const result = await db.select().from(movieSchema);
+    return result;
+  }
+
+  async getMovieById(id: string): Promise<Movie | null> {
+    const result = await db
+      .select()
+      .from(movieSchema)
+      .where(eq(movieSchema.id, id))
+      .limit(1);
+    return result[0] ?? null;
+  }
+
+  async createMovie(movie: Movie): Promise<void> {
+    await db.insert(movieSchema).values(movie);
+  }
+
+  async updateMovie(id: string, movie: Movie): Promise<void> {
+    await db.update(movieSchema).set(movie).where(eq(movieSchema.id, id));
+  }
+
+  async patchMovie(id: string, movie: Partial<Movie>): Promise<void> {
+    await db.update(movieSchema).set(movie).where(eq(movieSchema.id, id));
+  }
+
+  async deleteMovie(id: string): Promise<void> {
+    await db.delete(movieSchema).where(eq(movieSchema.id, id));
   }
 }
