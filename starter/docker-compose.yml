@@ -2,13 +2,10 @@ services:
   app:
     build: .
     container_name: node-ts-movie
-    # Commande ajoutée pour éviter que le volume .:/app écrase le dossier /app du container avec node-module dedans
-    command: sh -c "pnpm install && pnpm dev"
     volumes:
       - .:/app
-      - /app/node_modules
     ports:
-      - "3001:3000"
+      - "3000:3000"
     depends_on:
       - postgres
     environment:
